@@ -27,3 +27,5 @@ D:\Test_Automation\Shareskill\bin\Debug\ICSharpCode.SharpZipLib.dll
 D:\Test_Automation\Shareskill\bin\Debug\ICSharpCode.SharpZipLib.pdb
 D:\Test_Automation\Shareskill\bin\Debug\ICSharpCode.SharpZipLib.xml
 D:\Test_Automation\Shareskill\obj\Debug\Shareskill.Resource1.resources
+C:\Users\arjun\Documents\GitHub\Competition\Shareskill\obj\Debug\Shareskill.dll
+C:\Users\arjun\Documents\GitHub\Competition\Shareskill\obj\Debug\Shareskill.pdb
