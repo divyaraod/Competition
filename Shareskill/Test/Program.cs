@@ -24,7 +24,8 @@ namespace Shareskill
                 // Create an class and object to call the method
                 ShareskillPage obj = new ShareskillPage();
                 obj.AddService();
-                obj.ManageListings();
+                ManageListingsPage obj1 = new ManageListingsPage();
+                obj1.ManageListings();
 
             }
         }
