@@ -3,6 +3,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.PageObjects;
 using RelevantCodes.ExtentReports;
 using Shareskill.Global;
+using AutoIt;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,6 +25,9 @@ namespace Shareskill.Pages
         //Click on Share Skill button
         [FindsBy(How = How.XPath, Using = "//a[@href='/Home/ServiceListing']")]
         private IWebElement ShareSkillbtn { get; set; }
+        //Redcolor prompt for error message
+        [FindsBy(How = How.XPath, Using = "//div[@class='ui basic red prompt label transition visible']")]
+        private IWebElement Invalid { get; set; }
         //Click on Title
         [FindsBy(How = How.XPath, Using = "//input[@name='title']")]
         private IWebElement Title { get; set; }
@@ -189,7 +193,7 @@ namespace Shareskill.Pages
         [FindsBy(How = How.XPath, Using = "//input[@name='skillTrades' and @value='false']")]
         private IWebElement Creditbutton { get; set; }
         //Select Skill-Exchange Tag
-        [FindsBy(How = How.XPath, Using = "//input[@placeholder='Add new tag']")]
+        [FindsBy(How = How.XPath, Using = "//div[@class='form-wrapper']//input[@placeholder='Add new tag']")]
         private IWebElement SkillTag { get; set; }
         //Select Credit
         [FindsBy(How = How.XPath, Using = "//input[@name='charge']")]
@@ -213,276 +217,238 @@ namespace Shareskill.Pages
             GlobalDefinitions.ExcelLib.PopulateInCollection(Base.ExcelPath, "ShareSkill");
             GlobalDefinitions.wait(10);
 
-            //Click on Share Skill button
+            //Check if user is able to click on ShareSkill button
             ShareSkillbtn.Click();
             GlobalDefinitions.wait(10);
-            //Enter the Title
-            Title.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Title"));
-            //Enter the Description
-            Description.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Description"));
-            //Choose Category
-            CategoryId.Click();
-            switch (GlobalDefinitions.ExcelLib.ReadData(2, "CategoryId"))
+            Boolean isPresent = GlobalDefinitions.driver.FindElements(By.XPath("//input[@name='title']")).Count > 0;
+            if(isPresent == true)
             {
-                case "Graphics & Design":
-                    GraphicsDesignCategory.Click();
-                    switch (GlobalDefinitions.ExcelLib.ReadData(2, "SubcategoryId"))
-                    {
-                        case "Logo Design":
-                            LogoDesignsubcategory.Click();
-                            break;
-                        case "Book & Album covers":
-                            BookandAlbumcoversubcategory.Click();
-                            break;
-                        case "Flyers & Brochures":
-                            FlyersBrochuressubcategory.Click();
-                            break;
-                        case "Web & Mobile Design":
-                            WebMobileDesignsubcategory.Click();
-                            break;
-                        case "Search & Display Marketing":
-                            SearchDisplayMarketingsubcategory.Click();
-                            break;
-                        
-                    }
-                    break;
-                case "Digital Marketing":
-                    DigitalMarketingCategory.Click();
-                    switch (GlobalDefinitions.ExcelLib.ReadData(2, "SubcategoryId"))
-                    {
-                        case "Social Media Marketing":
-                            SocialMediaMarketingsubcategory.Click();
-                            break;
-                        case "Content Marketing":
-                            ContentMarketingsubcategory.Click();
-                            break;
-                        case "Video Marketing":
-                            VideoMarketingsubcategory.Click();
-                            break;
-                        case "Email Marketing":
-                            EmailMarketingsubcategory.Click();
-                            break;
-                        case "Search & Display Marketing":
-                            SearchandDisplayMarketing2subcategory.Click();
-                            break;
+                Base.test.Log(LogStatus.Pass, "Share Skill button is clicked Successfully");
+            }
+            else
+            {
+                Base.test.Log(LogStatus.Fail, "Share Skill button Click is UnSuccessful");
+            }
 
-                    }
-                    break;
-                case "Writing & Translation":
-                    WritingTranslationCategory.Click();
-                    switch (GlobalDefinitions.ExcelLib.ReadData(2, "SubcategoryId"))
-                    {
-                        case "Resumes & Cover Letters":
-                            ResumesandCoverLettersubcategory.Click();
-                            break;
-                        case "Proof Reading & Editing":
-                            ProofReadingandEditingsubcategory.Click();
-                            break;
-                        case "Translation":
-                            Translationsubcategory.Click();
-                            break;
-                        case "Creative Writing":
-                            CreativeWritingsubcategory.Click();
-                            break;
-                        case "Business Copywriting":
-                            BusinessandCopywritingsubcategory.Click();
-                            break;
-                    }
-                    break;
-                case "Video & Animation":
-                    VideoAnimationCategory.Click();
-                    switch (GlobalDefinitions.ExcelLib.ReadData(2, "SubcategoryId"))
-                    {
-                        case "Promotional Videos":
-                            PromotionalVideossubcategory.Click();
-                            break;
-                        case "Editing & Post Production":
-                            EditingandPostProductionsubcategory.Click();
-                            break;
-                        case "Lyric & Music Videos":
-                            LyricandMusicVideossubcategory.Click();
-                            break;
-                        case "Other":
-                            Othersubcategory.Click();
-                            break;
-                        
-                    }
-                    break;
-                case "Music & Audio":
-                    MusicAudioCategory.Click();
-                    switch (GlobalDefinitions.ExcelLib.ReadData(2, "SubcategoryId"))
-                    {
-                        case "Mixing & Mastering":
-                            MixingandMasteringsubcategory.Click();
-                            break;
-                        case "Voice Over":
-                            VoiceOversubcategory.Click();
-                            break;
-                        case "Song Writers & Composers":
-                            SongWritersandComposerssubcategory.Click();
-                            break;
-                        case "Other":
-                            Other2subcategory.Click();
-                            break;
+            //Check if user is able to enter valid data as Title
+            Title.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Title"));
+            //checking for invalid data
+            Boolean isError = GlobalDefinitions.driver.FindElements(By.XPath("//div[@class='ui basic red prompt label transition visible']")).Count > 0;
+            if(isError == true)
+            {
+                if(Invalid.Text == GlobalDefinitions.ExcelLib.ReadData(2, "Title Error Message"))
+                {
+                    Base.test.Log(RelevantCodes.ExtentReports.LogStatus.Pass, "Error displayed as expected: First character must be an alphabet character or a number");
+                }
+            }
+            else
+            {
+                //Check if user is able to Enter Title
+                Boolean isTitleFetched = GlobalDefinitions.driver.FindElements(By.XPath("//input[@value='Software Tester']")).Count > 0;
+                if (isTitleFetched == true)
+                {
+                    Base.test.Log(LogStatus.Pass, "Title is Fetched from The Excel Successfully");
+                }
+                else
+                {
+                    Base.test.Log(LogStatus.Fail, "Title is not fetched correctly");
+                }
+            }
 
-                    }
-                    break;
-                case "Programming & Tech":
-                    ProgrammingTechCategory.Click();
-                    switch (GlobalDefinitions.ExcelLib.ReadData(2, "SubcategoryId"))
-                    {
-                        case "WordPress":
-                            WordPresssubcategory.Click();
-                            break;
-                        case "Web & Mobile App":
-                            WebandMobileAppsubcategory.Click();
-                            break;
-                        case "Data Analysis & Reports":
-                            DataAnalysisandReportssubcategory.Click();
-                            break;
-                        case "QA":
-                            QAsubcategory.Click();
-                            break;
-                        case "Databases":
-                            Databasessubcategory.Click();
-                            break;
-                        case "Other":
-                            Other3subcategory.Click();
-                            break;
 
-                    }
-                    break;
-                case "Business":
-                    BusinessCategory.Click();
-                    switch (GlobalDefinitions.ExcelLib.ReadData(2, "SubcategoryId"))
-                    {
-                        case "Business Tips":
-                            BusinessTipssubcategory.Click();
-                            break;
-                        case "Presentations":
-                            Presentationssubcategory.Click();
-                            break;
-                        case "Market Advice":
-                            MarketAdvicesubcategory.Click();
-                            break;
-                        case "Legal Consulting":
-                            LegalConsultingsubcategory.Click();
-                            break;
-                        case "Financial Consulting":
-                            FinancialConsultingsubcategory.Click();
-                            break;
-                        case "Other":
-                            Other4subcategory.Click();
-                            break;
-                    }
-                    break;
-                case "Fun & Lifestyle":
-                    FunLifestyleCategory.Click();
-                    switch (GlobalDefinitions.ExcelLib.ReadData(2, "SubcategoryId"))
-                    {
-                        case "Online Lessons":
-                            OnlineLessonssubcategory.Click();
-                            break;
-                        case "Relationship Advice":
-                            RelationshipAdvicesubcategory.Click();
-                            break;
-                        case "Astrology":
-                            Astrologysubcategory.Click();
-                            break;
-                        case "Health, Nutrition & Fitness":
-                            HealthNutritionandFitnesssubcategory.Click();
-                            break;
-                        case "Gaming":
-                            Gamingsubcategory.Click();
-                            break;
-                        case "Other":
-                            Other5subcategory.Click();
-                            break;
-                    }
-                    break;
+            //Check if user is able to enter valid data as description
+            Description.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Description"));
+            //checking for invalid data
+            if (isError == true)
+            {
+                if (Invalid.Text == GlobalDefinitions.ExcelLib.ReadData(2, "Title Error Message"))
+                {
+                    Base.test.Log(RelevantCodes.ExtentReports.LogStatus.Pass, "Error displayed as expected: Special characters are not allowed");
+                }
+            }
+            //code for valid data
+            else
+            {
+                if (Description.Text == GlobalDefinitions.ExcelLib.ReadData(2, "Description"))
+                {
+                    Base.test.Log(LogStatus.Pass, "Description is Fetched from The Excel Successfully");
+                }
+                else
+                {
+                    Base.test.Log(LogStatus.Fail, "Description is not fetched correctly");
+                }
             }
            
-            //Enter Tags
-            Tags.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Tags"));
-            Tags.SendKeys(Keys.Enter);
-            Tags.SendKeys(Keys.Tab);
-            //Choose Service Type
+            //Check if user is able to select Category
+            CategoryId.Click();
+            IList<IWebElement> Category = CategoryId.FindElements(By.TagName("option"));
+            int categorycount = Category.Count;
+            for (int i = 0; i < categorycount; i++)
+            {
+                if (Category[i].Text == GlobalDefinitions.ExcelLib.ReadData(2, "CategoryId"))
+                {
+                    Category[i].Click();
+                    Base.test.Log(LogStatus.Pass, "Selected Category");
+                    break;
+                }
+                else
+                {
+                    Base.test.Log(LogStatus.Info, "Cant find Category");
+                }
+            }
+
+            //Check if user is able to choose Subcategory
+            SubcategoryId.Click();
+            IList<IWebElement> SubCategory = SubcategoryId.FindElements(By.TagName("option"));
+            int subcategorycount = SubCategory.Count;
+            for (int j = 0; j < subcategorycount; j++)
+            {
+                if (SubCategory[j].Text == GlobalDefinitions.ExcelLib.ReadData(2, "SubcategoryId"))
+                {
+                    SubCategory[j].Click();
+                    Base.test.Log(LogStatus.Pass, "Selected Subcategory");
+                    break;
+                }
+                else
+                {
+                    Base.test.Log(LogStatus.Info, "Cant find Subcategory");
+                }
+            }
+
+
+            //Check if user is able to Enter valid tags
+            Boolean isTagPresent = GlobalDefinitions.driver.FindElements(By.XPath("//span[contains(.,'test')]")).Count > 0;
+
+            if (isTagPresent == true)
+            {
+                Base.test.Log(LogStatus.Info, "Tag already exists");
+            }
+            else
+            {
+                Tags.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Tags"));
+                Tags.SendKeys(Keys.Enter);
+                Tags.SendKeys(Keys.Tab);
+                Base.test.Log(LogStatus.Pass, "Tag added successfully");
+            }
+            
+            //Check if user is able to select Service Type
             switch (GlobalDefinitions.ExcelLib.ReadData(2, "Service Type"))
             {
                 case "Hourlybasis":
                     HourlybasisServiceButton.Click();
-                    Base.test.Log(LogStatus.Info, "Hourly basis service is selected");
+                    Base.test.Log(LogStatus.Pass, "Hourly basis service is selected");
                     break;
                 case "One-off":
                     OneoffServiceButton.Click();
-                    Base.test.Log(LogStatus.Info, "One-off service is selected");
+                    Base.test.Log(LogStatus.Pass, "One-off service is selected");
                     break;
             }
             
-            //Choose Location Type
+            //Check if user is able to select Location Type
             switch (GlobalDefinitions.ExcelLib.ReadData(2, "Location Type"))
             {
                 case "On-site":
                     OnsiteButton.Click();
-                    Base.test.Log(LogStatus.Info, "Onsite location type is selected");
+                    Base.test.Log(LogStatus.Pass, "Onsite location type is selected");
                     break;
                 case "Online":
                     OnlineButton.Click();
-                    Base.test.Log(LogStatus.Info, "Online location type is selected");
+                    Base.test.Log(LogStatus.Pass, "Online location type is selected");
                     break;
             }
-            //Enter Dates
+            
+            //Check if user is able to enter valid Date
             StartDate.Click();
             GlobalDefinitions.wait(10);
             StartDate.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "StartDate"));
+            //checking for invalid start date
+             if (isError == true)
+            {
+                if (Invalid.Text == GlobalDefinitions.ExcelLib.ReadData(2, "Title Error Message"))
+                {
+                    Base.test.Log(RelevantCodes.ExtentReports.LogStatus.Pass, "Error displayed as expected: Start Date cannot be set to a day in the past");
+                }
+            }
             EndDate.Click();
             GlobalDefinitions.wait(10);
             EndDate.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "EndDate"));
             Day.Click();
             GlobalDefinitions.wait(10);
-            //Enter Time
+            
+            //Check if user is able to select Time
             StartTime.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "StartTime"));
             EndTime.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "EndTime"));
-            //Choose Skill-Exchnage
+            Base.test.Log(LogStatus.Pass, "Availability is selected");
+           
+            //Check if user is able to slect Skill-Trade
             switch (GlobalDefinitions.ExcelLib.ReadData(2, "Skill Trade"))
             {
                 case "Skill-exchange":
                     SkillExchangebutton.Click();
-                    Base.test.Log(LogStatus.Info, "Skill-exchange is selected");
-                    SkillTag.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Skills"));
-                    Tags.SendKeys(Keys.Enter);
-                    Tags.SendKeys(Keys.Tab);
+                    Boolean isSkillTagPresent = GlobalDefinitions.driver.FindElements(By.XPath("//span[contains(.,'cooking')]")).Count > 0;
+                    if (isTagPresent == true)
+                    {
+                        Base.test.Log(LogStatus.Info, "Tag already exists");
+                    }
+                    else
+                    {
+                        SkillTag.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Skills"));
+                        SkillTag.SendKeys(Keys.Enter);
+                        SkillTag.SendKeys(Keys.Tab);
+                        Base.test.Log(LogStatus.Pass, "SkillTag is fetched successfully");
+                    }
                     break;
                 case "Credit":
                     Creditbutton.Click();
                     Base.test.Log(LogStatus.Info, "Credit is selected");
                     Credit.SendKeys(GlobalDefinitions.ExcelLib.ReadData(2, "Credit"));
+                    Boolean isCreditFetched = GlobalDefinitions.driver.FindElements(By.XPath("//input[@value='10']")).Count > 0;
+                    if (isCreditFetched == true)
+                    {
+                        Base.test.Log(LogStatus.Pass, "Credit is Fetched from The Excel Successfully");
+                    }
+                    else
+                    {
+                        Base.test.Log(LogStatus.Fail, "Credit is not fetched correctly");
+                    }
                     break;
             }
             
+            //Check if user is able to Upload worksample using AutoIt tool
             WorkSample.Click();
             Thread.Sleep(1000);
+            AutoItX.WinActivate("Open");
+            AutoItX.Send(GlobalDefinitions.ExcelLib.ReadData(2, "Upload File Path"));
+            Thread.Sleep(1000);
+            AutoItX.Send("{Enter}");
+            Boolean isWorksampleUploaded = GlobalDefinitions.driver.FindElements(By.XPath("//a[text()='dd.txt']")).Count > 0;
+            if (isWorksampleUploaded == true)
+            {
+                Base.test.Log(LogStatus.Pass, "Uploaded file successfully");
+            }
+            else
+            {
+                Base.test.Log(LogStatus.Fail, "File Updation Unsuccessful");
+            }
             
-            //Uploading file using AutoIt tool
-            Process.Start("D:\\Test_Automation\\Shareskill\\FileUpload.exe");
-            Base.test.Log(LogStatus.Info, "Uploaded file successfully");
-            //Choose State
+            //Check if user is able to choose state
             switch (GlobalDefinitions.ExcelLib.ReadData(2, "State"))
             {
                 
                 case "Active":
                     GlobalDefinitions.wait(60);
                     Activebutton.Click();
-                    Base.test.Log(LogStatus.Info, "Active state is selected");
+                    Base.test.Log(LogStatus.Pass, "Active state is selected");
                     break;
                 case "Hidden":
                     Hiddenbutton.Click();
-                    Base.test.Log(LogStatus.Info, "Hidden state is selected");
+                    Base.test.Log(LogStatus.Pass, "Hidden state is selected");
                     break;
             }
-            
+           
+            //Check if user is able to click Save button
             Savebtn.Click();
-            Base.test.Log(LogStatus.Info, "Added Skill successfully");
+            Base.test.Log(LogStatus.Pass, "Save button is clicked");
         }
 
        

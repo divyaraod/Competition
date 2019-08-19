@@ -27,3 +27,7 @@ D:\Test_Automation\Shareskill\bin\Debug\ICSharpCode.SharpZipLib.dll
 D:\Test_Automation\Shareskill\bin\Debug\ICSharpCode.SharpZipLib.pdb
 D:\Test_Automation\Shareskill\bin\Debug\ICSharpCode.SharpZipLib.xml
 D:\Test_Automation\Shareskill\obj\Debug\Shareskill.Resource1.resources
+D:\Test_Automation\Shareskill\bin\Debug\AutoItX3.dll
+D:\Test_Automation\Shareskill\bin\Debug\AutoItX3_x64.dll
+D:\Test_Automation\Shareskill\bin\Debug\AutoItX3.Assembly.dll
+D:\Test_Automation\Shareskill\bin\Debug\AutoItX3.Assembly.xml

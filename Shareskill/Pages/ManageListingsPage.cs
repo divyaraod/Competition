@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Shareskill.Pages
@@ -36,16 +37,55 @@ namespace Shareskill.Pages
         #endregion
         internal void ManageListings()
         {
+            //Check if the skill is added Successfully
+            //Check if Manage Listings tab is clickable
             ManageListingsbtn.Click();
-            Viewicon.Click();
-            Base.test.Log(LogStatus.Info, "Can view Skill successfully");
-            ManageListingsbtn.Click();
-            Writeicon.Click();
-            ManageListingsbtn.Click();
-            Removeicon.Click();
-            ConfirmDeletebtn.Click();
-            Base.test.Log(LogStatus.Info, "Skill deleted successfully");
+            Base.test.Log(LogStatus.Info, "Manage Listings Tab is clicked");
+            GlobalDefinitions.wait(10);
+            Boolean isSkillPresent = GlobalDefinitions.driver.FindElements(By.XPath("//td[text()='Software Tester']")).Count > 0;
+            if (isSkillPresent == true)
+            {
+                Global.Base.test.Log(RelevantCodes.ExtentReports.LogStatus.Pass, "Skill Added Successfully");
+                
+            }
+            else
+            {
+                Global.Base.test.Log(RelevantCodes.ExtentReports.LogStatus.Fail, "Skill Addition UnSuccessful");
+            }
 
+            //Check if user is able to view skill successfully
+            Viewicon.Click();
+            Boolean isSkillViewable = GlobalDefinitions.driver.FindElements(By.XPath("//div[@class='content']")).Count > 0;
+            if (isSkillViewable == true)
+            {
+                Base.test.Log(LogStatus.Pass, "Skill is viewed successfully");
+            }
+            else
+            {
+                Base.test.Log(LogStatus.Fail, "Skill cant be viewed");
+            }
+            ManageListingsbtn.Click();
+
+            //Check if user is able to click write icon of Skill
+            Writeicon.Click();
+            Base.test.Log(LogStatus.Pass, "write icon of skill is clicked");
+            ManageListingsbtn.Click();
+
+            //Check if user is able to delete skill
+            //Check if user is able to click remove icon of Skill
+            Removeicon.Click();
+            Base.test.Log(LogStatus.Info, "remove icon of skill is clicked");
+            ConfirmDeletebtn.Click();
+            GlobalDefinitions.wait(50);
+            Boolean isSkillDeleted = GlobalDefinitions.driver.FindElements(By.XPath("//td[text()='Programming & Tech']//following-sibling::td[text()='Software Tester']")).Count > 0;
+            if (isSkillDeleted == true)
+            {
+                Base.test.Log(LogStatus.Pass, "Skill deleted successfully");
+            }
+            else
+            {
+                Base.test.Log(LogStatus.Fail, "Skill deletion UnSuccessful");
+            }
         }
     }
 }
